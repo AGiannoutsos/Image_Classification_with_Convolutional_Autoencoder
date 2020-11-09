@@ -108,7 +108,7 @@ def FullyConected(model_layers, input_shape):
 
     return model
 
-def Classifier(encoder_model, fully_conected_model, classes):
+def Classifier(encoder_model, fully_conected_model, num_of_classes):
 
     # merge both models into one
     classifier = Sequential(name="classifier")
@@ -118,7 +118,7 @@ def Classifier(encoder_model, fully_conected_model, classes):
     classifier.add(fully_conected_model)
 
     # add softmax layer
-    classifier.add( Dense(classes, activation="softmax") )
+    classifier.add( Dense(num_of_classes, activation="softmax") )
 
     return classifier
 
@@ -135,9 +135,68 @@ def get_Autoencoder(model_info, input_shape):
         optimizer = keras.optimizers.Adam(model_info["optimizer"][1])   
 
     # compile the model with given hyperparameters
-    autoencoder.compile(optimizer=optimizer,  loss="mean_squared_error", metrics=[ "accuracy", keras.metrics.Precision(), keras.metrics.Recall(), keras.metrics.AUC()])
+    # autoencoder.compile(optimizer=optimizer,  loss="mean_squared_error", metrics=[ "accuracy", keras.metrics.Precision(), keras.metrics.Recall(), keras.metrics.AUC()])
+    autoencoder.compile(optimizer=optimizer,  loss="mean_squared_error")
 
     return autoencoder
+
+# train new or saved autoencoder just type the path at model info if training a new one
+def train_Autoencoder(model, train_data, validation_split=0.1, batch_size=32, epochs=1):
+
+    # if inserted saved model then load it
+    if isinstance(model, str):
+        model = keras.models.load_model(model)
+    
+    history = model.fit(train_data, train_data, validation_split=validation_split, batch_size=batch_size, epochs=epochs) 
+
+    # return history for printing the error
+    return history
+
+# train_Autoencoder("encoder1.h5", x_train_scal)  
+    
+def get_Classifier(model_info, input_shape, num_of_classes):
+
+    # get encoder
+    autoencoder = model_info["encoder_layers"]
+    # if inserted saved model then load it
+    if isinstance(autoencoder, str):
+        autoencoder = keras.models.load_model(autoencoder)
+        encoder = autoencoder.layers[0] 
+    else: #else build it
+        encoder = Encoder(model_info["encoder_layers"], input_shape)
+
+    dense = FullyConected(model_info["dense_layers"], encoder.output.get_shape()[1:])
+    # dense.summary()
+
+    classifier = Classifier(encoder, dense, num_of_classes)
+
+    # get the optimizer
+    if (model_info["optimizer"][0] == "rmsprop"):
+        optimizer = keras.optimizers.RMSprop(model_info["optimizer"][1])   
+    elif (model_info["optimizer"][0] == "adam"):
+        optimizer = keras.optimizers.Adam(model_info["optimizer"][1])   
+        
+    classifier.compile(optimizer=optimizer,  loss="categorical_crossentropy", metrics=[ "accuracy", keras.metrics.Precision(), keras.metrics.Recall(), keras.metrics.AUC()])
+
+    return classifier
+
+def train_Classifier(model, train_data, label_data, validation_split=0.1, batch_size=32, dense_only_train_epochs=1, full_train_epochs=1):
+    # if inserted saved model then load it
+    if isinstance(model, str):
+        model = keras.models.load_model(model)
+    
+    # train only dense set encoder non trainble
+    print("Train only dense layer")
+    model.layers[0].trainable = False
+    history = model.fit(train_data, label_data, validation_split=validation_split, batch_size=batch_size, epochs=dense_only_train_epochs)
+
+    # train full model
+    print("Train full model")
+    model.layers[0].trainable = True
+    history = model.fit(train_data, label_data, validation_split=validation_split, batch_size=batch_size, epochs=full_train_epochs)
+
+    # return history for printing the error
+    return history
 
 
 if __name__ == "__main__":
