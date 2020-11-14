@@ -113,7 +113,7 @@ def Classifier(encoder_model, fully_conected_model, num_of_classes):
     # merge both models into one
     classifier = Sequential(name="classifier")
 
-    classifier.add( encoder_model.input )
+    classifier.add(encoder_model.input)
     classifier.add(encoder_model)
     classifier.add(fully_conected_model)
 
@@ -147,9 +147,10 @@ def get_Autoencoder(model_info, input_shape):
     return autoencoder
 
 # train new or saved autoencoder just type the path at model info if training a new one
-def train_Autoencoder(model, train_data, validation_split=0.1, batch_size=32, epochs=1):
+# def train_Autoencoder(model, train_data, validation_split=0.1, batch_size=32, epochs=1):
+def train_Autoencoder(model, models_info, train_data, validation_split=0.1):
     
-    history = model.fit(train_data, train_data, validation_split=validation_split, batch_size=batch_size, epochs=epochs) 
+    history = model.fit(train_data, train_data, validation_split=validation_split, batch_size=models_info['batch_size'], epochs=models_info['epochs']) 
     # return history for printing the error
     return history
 
@@ -187,7 +188,7 @@ def get_Classifier(model_info, input_shape, num_of_classes):
 
     return classifier
 
-def train_Classifier(model, train_data, label_data, validation_test_data=None, validation_labels=None, batch_size=32, dense_only_train_epochs=1, full_train_epochs=1):
+def train_Classifier(model, model_info, train_data, label_data, validation_test_data, validation_labels):
     
     if (validation_test_data is None) or (validation_labels is None):
         validation_data=None
@@ -197,65 +198,65 @@ def train_Classifier(model, train_data, label_data, validation_test_data=None, v
     # train only dense set encoder non trainble
     print("Train only dense layer")
     model.layers[0].trainable = False
-    history = model.fit(train_data, label_data, batch_size=batch_size, epochs=dense_only_train_epochs, validation_data=validation_data, initial_epoch=dense_only_train_epochs)
+    history = model.fit(train_data, label_data, batch_size=model_info['batch_size'], epochs=model_info['dense_only_train_epochs'], validation_data=validation_data, initial_epoch=model_info['dense_only_train_epochs'])
 
     # train full model
     print("Train full model")
     model.layers[0].trainable = True
-    history = model.fit(train_data, label_data, batch_size=batch_size, epochs=full_train_epochs+dense_only_train_epochs, validation_data=validation_data)
+    history = model.fit(train_data, label_data, batch_size=model_info['batch_size'], epochs=model_info['full_train_epochs']+model_info['dense_only_train_epochs'], validation_data=validation_data)
 
     # return history for printing the error
     return history
 
 
-if __name__ == "__main__":
-    hamond_model = {"encoder_layers" : [["conv", 32, (3,3)],
-                                        ["batchNorm"],
-                                        ["conv", 32, (3,3)],
-                                        ["pool", (2,2)],
-                                        ["conv", 64, (3,3)],
-                                        ["batchNorm"],
-                                        ["conv", 64, (3,3)],
-                                        ["pool", (2,2)],
-                                        ["conv", 128, (3,3)],
-                                        ["batchNorm"]]
-                    ,
-                    "decoder_layers" :  [["conv", 128, (3,3)],
-                                        ["batchNorm"],
-                                        ["conv", 64, (3,3)],
-                                        ["batchNorm"],
-                                        ["conv", 64, (3,3)],
-                                        ["batchNorm"],
-                                        ["upSample", (2,2)],
-                                        ["conv", 32, (3,3)],
-                                        ["batchNorm"],
-                                        ["conv", 32, (3,3)],
-                                        ["batchNorm"],
-                                        ["upSample", (2,2)]]
-                    ,
-                    "optimizer" :       ["adam", 0.01]
-                    }
+# if __name__ == "__main__":
+    # hamond_model = {"encoder_layers" : [["conv", 32, (3,3)],
+    #                                     ["batchNorm"],
+    #                                     ["conv", 32, (3,3)],
+    #                                     ["pool", (2,2)],
+    #                                     ["conv", 64, (3,3)],
+    #                                     ["batchNorm"],
+    #                                     ["conv", 64, (3,3)],
+    #                                     ["pool", (2,2)],
+    #                                     ["conv", 128, (3,3)],
+    #                                     ["batchNorm"]]
+    #                 ,
+    #                 "decoder_layers" :  [["conv", 128, (3,3)],
+    #                                     ["batchNorm"],
+    #                                     ["conv", 64, (3,3)],
+    #                                     ["batchNorm"],
+    #                                     ["conv", 64, (3,3)],
+    #                                     ["batchNorm"],
+    #                                     ["upSample", (2,2)],
+    #                                     ["conv", 32, (3,3)],
+    #                                     ["batchNorm"],
+    #                                     ["conv", 32, (3,3)],
+    #                                     ["batchNorm"],
+    #                                     ["upSample", (2,2)]]
+    #                 ,
+    #                 "optimizer" :       ["adam", 0.01]
+    #                 }
 
-    stupid_model = {"encoder_layers" : [["conv", 32, (3,3)],
-                                        ["batchNorm"],
-                                        ["conv", 32, (3,3)],
-                                        ["pool", (2,2)],
-                                        ["conv", 64, (3,3)],
-                                        ["batchNorm"],
-                                        ["conv", 64, (3,3)],
-                                        ["pool", (2,2)]]
-                    ,
-                    "decoder_layers" :  [["conv", 64, (3,3)],
-                                        ["batchNorm"],
-                                        ["conv", 64, (3,3)],
-                                        ["pool", (2,2)],
-                                        ["conv", 32, (3,3)],
-                                        ["batchNorm"],
-                                        ["conv", 32, (3,3)],
-                                        ["pool", (2,2)]]
-                    ,
-                    "optimizer" :       ["adam", 0.01]
-                    }
+    # stupid_model = {"encoder_layers" : [["conv", 32, (3,3)],
+    #                                     ["batchNorm"],
+    #                                     ["conv", 32, (3,3)],
+    #                                     ["pool", (2,2)],
+    #                                     ["conv", 64, (3,3)],
+    #                                     ["batchNorm"],
+    #                                     ["conv", 64, (3,3)],
+    #                                     ["pool", (2,2)]]
+    #                 ,
+    #                 "decoder_layers" :  [["conv", 64, (3,3)],
+    #                                     ["batchNorm"],
+    #                                     ["conv", 64, (3,3)],
+    #                                     ["pool", (2,2)],
+    #                                     ["conv", 32, (3,3)],
+    #                                     ["batchNorm"],
+    #                                     ["conv", 32, (3,3)],
+    #                                     ["pool", (2,2)]]
+    #                 ,
+    #                 "optimizer" :       ["adam", 0.01]
+    #                 }
 
-    autoencoder = get_Autoencoder(hamond_model, [28,28,1])
-    autoencoder.summary()
+    # autoencoder = get_Autoencoder(hamond_model, [28,28,1])
+    # autoencoder.summary()

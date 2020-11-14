@@ -47,6 +47,7 @@ def autoencoder_visualization(histories, train_data, num_of_test_images=4):
         ax_pred[num_of_test_images-1+history*num_of_test_images].axis("off")
 
     # plt.close()
+    plt.show(block=True)
     return fig
 
 # plot the loss for multiple models + some predicted data
@@ -94,6 +95,7 @@ def classifier_prediction_visualization(history, test_data, test_labels, num_of_
         ax_bar[ax].set_xticklabels(classes)
 
     # plt.close()
+    plt.show(block=True) 
     return fig
 
 def classifier_loss_visualization(histories):
@@ -166,12 +168,10 @@ def classifier_loss_visualization(histories):
 
 
     _ = fig.tight_layout(rect=[0, 0, 1, 0.9])
+    plt.show(block=True)
     return fig
 
-
-
-
-if __name__ == '__main__':
+# if __name__ == '__main__':
 
 
     # a = classifier_prediction_visualization(histor, x_train_scal, y_train, num_of_test_images=20)
