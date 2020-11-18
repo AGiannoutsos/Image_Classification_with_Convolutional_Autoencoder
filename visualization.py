@@ -132,6 +132,8 @@ def classifier_loss_visualization(histories):
         subplot.plot(histories[history].history['val_accuracy'], label ='test accuracy')
         subplot.set_title("Accuracy")
         subplot.legend()
+        for val in (histories[history].history['accuracy'], histories[history].history['val_accuracy']):
+            subplot.annotate('%0.3f'%val[-1], xy=(1, val[-1]), xytext=(5, 0), textcoords='offset points', xycoords=('axes fraction', 'data'))
         subplot.grid(True)
         # precision
         subplot = plt.subplot(gs[i+1,1])
@@ -139,6 +141,8 @@ def classifier_loss_visualization(histories):
         subplot.plot(histories[history].history['val_Precision'], label ='test precision')
         subplot.set_title("Precision")
         subplot.legend()
+        for val in (histories[history].history['Precision'], histories[history].history['val_Precision']):
+            subplot.annotate('%0.3f'%val[-1], xy=(1, val[-1]), xytext=(5, 0), textcoords='offset points', xycoords=('axes fraction', 'data'))
         subplot.grid(True)
         # recall
         subplot = plt.subplot(gs[i,2]) 
@@ -146,6 +150,8 @@ def classifier_loss_visualization(histories):
         subplot.plot(histories[history].history['val_Recall'], label ='test recall')
         subplot.set_title("Recall")
         subplot.legend()
+        for val in (histories[history].history['Recall'], histories[history].history['val_Recall']):
+            subplot.annotate('%0.3f'%val[-1], xy=(1, val[-1]), xytext=(5, 0), textcoords='offset points', xycoords=('axes fraction', 'data'))
         subplot.grid(True)
         # f1
         subplot = plt.subplot(gs[i+1,2]) 
@@ -153,6 +159,8 @@ def classifier_loss_visualization(histories):
         subplot.plot(f1_val[history], label ='test f1')
         subplot.set_title("F1")
         subplot.legend()
+        for val in (f1[history], f1_val[history]):
+            subplot.annotate('%0.3f'%val[-1], xy=(1, val[-1]), xytext=(5, 0), textcoords='offset points', xycoords=('axes fraction', 'data'))
         subplot.grid(True)
         history+=1
 
@@ -164,11 +172,12 @@ def classifier_loss_visualization(histories):
         ax0[history].set_ylabel('Loss', fontsize=15)
         ax0[history].legend(fontsize=15)
         ax0[history].set_title("Model loss", fontsize=15)
+        for val in (histories[history].history['loss'], histories[history].history['val_loss']):
+            ax0[history].annotate('%0.5f'%val[-1], xy=(1, val[-1]), xytext=(5, 0), textcoords='offset points', xycoords=('axes fraction', 'data'))
         ax0[history].grid(True)
 
 
     _ = fig.tight_layout(rect=[0, 0, 1, 0.9])
-    plt.show(block=True)
     return fig
 
 # if __name__ == '__main__':
