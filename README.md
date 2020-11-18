@@ -19,8 +19,9 @@ Written digits images classification with Convolutional Autoencoders in Keras
 <h3>How we run the executables</h3>
 <h4>
   To run it with google Colab:
-    [![Click here to open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Niranjankumar-c/DeepLearning-PadhAI/blob/master/DeepLearning_Materials/2_OverFitting_Regularization_NeuralNetworks/OverfittingAndRegularisation.ipynb)
 </h4>
+
+   [![Click here to open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Niranjankumar-c/DeepLearning-PadhAI/blob/master/DeepLearning_Materials/2_OverFitting_Regularization_NeuralNetworks/OverfittingAndRegularisation.ipynb)
 
 <h3>How we tested that it works</h3>
 <h4>
