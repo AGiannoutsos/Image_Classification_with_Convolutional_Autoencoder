@@ -1,8 +1,4 @@
-# Image_Classification_with_Convolutional_Autoencoder
-Written digits images classification with Convolutional Autoencoders in Keras
-
-  [![Click here to open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Niranjankumar-c/DeepLearning-PadhAI/blob/master/DeepLearning_Materials/2_OverFitting_Regularization_NeuralNetworks/OverfittingAndRegularisation.ipynb)
-  
+# Image Classification with Convolutional Autoencoder
   
 <p style="text-align: center;">
     <img src="./doc/images/di_uoa.png" alt="UOA">
@@ -17,10 +13,13 @@ Written digits images classification with Convolutional Autoencoders in Keras
 
 <h3>Introduction to our project (info, goals, complexity, speed, results, simplicity, abstractiveness)</h3>
 <h4>
+Written digits images classification with Convolutional Autoencoders in Keras
 </h4>
 
 <h3>How we run the executables</h3>
 <h4>
+  To run it with google Colab:
+    [![Click here to open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Niranjankumar-c/DeepLearning-PadhAI/blob/master/DeepLearning_Materials/2_OverFitting_Regularization_NeuralNetworks/OverfittingAndRegularisation.ipynb)
 </h4>
 
 <h3>How we tested that it works</h3>
