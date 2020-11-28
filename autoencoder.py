@@ -27,7 +27,7 @@ class bcolors:
 # Define class for reading data from MNIST file
 def load_mnist(dataset, digits=np.arange(10), type='data', numOfElements=-1):
     intType = np.dtype( 'int32' ).newbyteorder( '>' )
-    if not os.path.exists(dataset):
+    if not os.path.isfile(dataset):
         return None
     fname = os.path.join(".", dataset)
     if (type == 'data'):
@@ -59,7 +59,7 @@ def read_hyperparameters():
         validInput = False
         while not validInput:
             confName = input(bcolors.OKCYAN+'Please add your configuration\'s path: '+bcolors.ENDC)
-            if os.path.exists(confName):
+            if os.path.isfile(confName):
                 with open(confName) as json_file:
                     try:
                         data = json.load(json_file)
@@ -283,7 +283,7 @@ def main():
         datasetFile = sys.argv[sys.argv.index('-d')+1]
 
     # Reading dataset
-    if not os.path.exists(datasetFile):
+    if not os.path.isfile(datasetFile):
         print(bcolors.FAIL+'Error: invalid path.'+bcolors.ENDC)
         sys.exit()
     data = normalize(load_mnist(datasetFile))
@@ -304,7 +304,7 @@ def main():
             validInput = False
             while not validInput:
                 model_info = input(bcolors.OKCYAN+'Please add your model\'s path: '+bcolors.ENDC)
-                if os.path.exists(model_info):
+                if os.path.isfile(model_info):
                     validInput = True
                 else:
                     print(bcolors.FAIL+'Error: invalid path.'+bcolors.ENDC)
