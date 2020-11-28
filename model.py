@@ -151,6 +151,10 @@ def get_Autoencoder(model_info, input_shape):
 def train_Autoencoder(model, models_info, train_data, validation_split=0.1):
     
     history = model.fit(train_data, train_data, validation_split=validation_split, batch_size=models_info['batch_size'], epochs=models_info['epochs']) 
+
+    # add model info to history
+    history.history["model_info"] = models_info
+
     # return history for printing the error
     return history
 
@@ -188,22 +192,25 @@ def get_Classifier(model_info, input_shape, num_of_classes):
 
     return classifier
 
-def train_Classifier(model, model_info, train_data, label_data, validation_test_data, validation_labels):
+def train_Classifier(model, model_info, train_data, label_data, validation_split=0.1):
     
-    if (validation_test_data is None) or (validation_labels is None):
-        validation_data=None
-    else:
-        validation_data=(validation_test_data, validation_labels)
+    # if (validation_test_data is None) or (validation_labels is None):
+    #     validation_data=None
+    # else:
+    #     validation_data=(validation_test_data, validation_labels)
 
     # train only dense set encoder non trainble
     print("Train only dense layer")
     model.layers[0].trainable = False
-    history = model.fit(train_data, label_data, batch_size=model_info['batch_size'], epochs=model_info['dense_only_train_epochs'], validation_data=validation_data, initial_epoch=model_info['dense_only_train_epochs'])
+    history = model.fit(train_data, label_data, batch_size=model_info['batch_size'], epochs=model_info['dense_only_train_epochs'], validation_split=validation_split, initial_epoch=model_info['dense_only_train_epochs'])
 
     # train full model
     print("Train full model")
     model.layers[0].trainable = True
-    history = model.fit(train_data, label_data, batch_size=model_info['batch_size'], epochs=model_info['full_train_epochs']+model_info['dense_only_train_epochs'], validation_data=validation_data)
+    history = model.fit(train_data, label_data, batch_size=model_info['batch_size'], epochs=model_info['full_train_epochs']+model_info['dense_only_train_epochs'], validation_split=validation_split)
+
+    # add model info to history
+    history.history["model_info"] = model_info
 
     # return history for printing the error
     return history
