@@ -5,6 +5,7 @@ from keras.models import Sequential
 from keras.layers import Input, Dense, Activation, ZeroPadding2D, BatchNormalization, Flatten, Conv2D
 from keras.layers import AveragePooling2D, MaxPool2D, MaxPooling2D, Dropout, GlobalMaxPooling2D, GlobalAveragePooling2D, UpSampling2D
 from keras.layers.merge import concatenate
+from sklearn.metrics import classification_report
 
 
 def Encoder(model_layers, input_shape):
@@ -202,15 +203,45 @@ def train_Classifier(model, model_info, train_data, label_data, validation_split
     # train only dense set encoder non trainble
     print("Train only dense layer")
     model.layers[0].trainable = False
-    history = model.fit(train_data, label_data, batch_size=model_info['batch_size'], epochs=model_info['dense_only_train_epochs'], validation_split=validation_split, initial_epoch=model_info['dense_only_train_epochs'])
+    history = model.fit(train_data, label_data, batch_size=model_info['batch_size'], epochs=model_info['dense_only_train_epochs'], validation_split=validation_split)
 
     # train full model
     print("Train full model")
     model.layers[0].trainable = True
-    history = model.fit(train_data, label_data, batch_size=model_info['batch_size'], epochs=model_info['full_train_epochs']+model_info['dense_only_train_epochs'], validation_split=validation_split)
+    # recompile if 2nd learning rate is added
+    if len(model_info["optimizer"]) > 2:
+        if (model_info["optimizer"][0] == "rmsprop"):
+            optimizer = keras.optimizers.RMSprop(model_info["optimizer"][2])   
+        elif (model_info["optimizer"][0] == "adam"):
+            optimizer = keras.optimizers.Adam(model_info["optimizer"][2]) 
+        model.compile(optimizer=optimizer,  loss="categorical_crossentropy", metrics=[ "accuracy", keras.metrics.Precision(name="Precision"), keras.metrics.Recall(name="Recall")])
 
+    second_history = model.fit(train_data, label_data, batch_size=model_info['batch_size'], epochs=model_info['full_train_epochs']+model_info['dense_only_train_epochs'], validation_split=validation_split, initial_epoch=model_info['dense_only_train_epochs'])
     # add model info to history
     history.history["model_info"] = model_info
+    
+    # append old history to new one as to print one graph because keras
+    history.history["accuracy"].extend(second_history.history["accuracy"])
+    history.history["Precision"].extend(second_history.history["Precision"])
+    history.history["Recall"].extend(second_history.history["Recall"])
+    history.history["loss"].extend(second_history.history["loss"])
+
+    history.history["val_accuracy"].extend(second_history.history["val_accuracy"])
+    history.history["val_Precision"].extend(second_history.history["val_Precision"])
+    history.history["val_Recall"].extend(second_history.history["val_Recall"])
+    history.history["val_loss"].extend(second_history.history["val_loss"])
+
+    # get the classification report
+    # shuffle random
+    random_order = np.arange(0,train_data.shape[0])
+    np.random.shuffle(random_order)
+    train_data = train_data[random_order]
+    label_data = label_data[random_order]
+
+    # get the predictions
+    prediction_hot = history.model.predict(train_data[:,:,:,:])
+    prediction = np.argmax(prediction_hot, axis=1) #
+    history.history["classification_report"] = classification_report(np.argmax(label_data, axis=1)[0:int(0.1*train_data.shape[0])], prediction[0:int(0.1*train_data.shape[0])], output_dict=True)
 
     # return history for printing the error
     return history

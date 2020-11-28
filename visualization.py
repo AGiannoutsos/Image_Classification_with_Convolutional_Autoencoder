@@ -124,13 +124,31 @@ def autoencoder_visualization(histories, train_data, num_of_test_images=4):
 
     ### plot all together ###
     if num_of_histories > 2:
-        ax = plt.subplot(gs[(num_of_histories-1)*num_of_test_images:, 0:])
+        ax = plt.subplot(gs[(num_of_histories-1)*num_of_test_images:, 0])
 
         for history in range(num_of_histories-1):
             ax.plot(histories[history].history['val_loss'], label="experiment "+str(history+1))
         ax.grid(True)
         ax.legend()
+        ax.set_xlabel('Epoch', fontsize=15)
+        ax.set_ylabel('Loss', fontsize=15)
         ax.set_title("Models' losses", fontsize=15)
+
+        # scatter experimets
+        ax = plt.subplot(gs[(num_of_histories-1)*num_of_test_images:, 1:])
+
+        for history in range(num_of_histories-1):
+            ax.scatter(history, histories[history].history['loss'][-1], label="exp "+str(history+1)+" loss", marker="o")
+            ax.scatter(history, histories[history].history['val_loss'][-1], label="exp "+str(history+1)+" val loss", marker="X")
+        ax.grid(True)
+        ax.legend()
+        ax.set_xlabel('Experiments', fontsize=15)
+        ax.set_ylabel('Loss', fontsize=15)
+        ax.set_xticks(range(num_of_histories-1))
+        ax.set_xticklabels(["exp "+str(x+1) for x in range(num_of_histories-1)])
+        ax.set_xticks(range(num_of_histories-1), np.arange(1,num_of_histories-1))
+        ax.set_title("Models' losses per hyperparameters", fontsize=15)
+
 
     # plt.close()
     # _ = fig.tight_layout(rect=[0, 0, 1, 0.9])
@@ -274,12 +292,13 @@ def classifier_loss_visualization(histories):
     num_of_histories += 1
 
     plt.tight_layout()
-    fig = plt.figure(figsize=(18,8*num_of_histories))
+    fig = plt.figure(figsize=(22,8*num_of_histories))
     fig.suptitle("Visualization of Metrics for Every Experiment", fontsize=25)
 
-    gs  = gridspec.GridSpec(num_of_offset*num_of_histories, 3, width_ratios=[0.5, 0.25, 0.25], height_ratios=np.ones(num_of_offset*num_of_histories))
+    gs  = gridspec.GridSpec(num_of_offset*num_of_histories, 4, width_ratios=[0.35, 0.15, 0.15, 0.35], height_ratios=np.ones(num_of_offset*num_of_histories))
 
     ax0 = [plt.subplot(gs[i*num_of_offset:i*num_of_offset+num_of_offset, 0]) for i in range(num_of_histories-1)]
+    ax_heatmap = [plt.subplot(gs[i*num_of_offset:i*num_of_offset+num_of_offset, 3]) for i in range(num_of_histories-1)]
 
     # get f1 score
     f1 = []
@@ -346,50 +365,64 @@ def classifier_loss_visualization(histories):
         classifier = print_model_info_classifier(histories[history].history['model_info'])
         ax0[history].set_title("Experiment: "+str(history+1)+"\n"+classifier+"\nModel loss", fontsize=15)
 
+    # plot classification report on validation set
+    for history in range(num_of_histories-1):
+        matrix = get_matrix_classification_report(histories[history].history['classification_report'])
+        sns.heatmap(matrix, annot=True, ax=ax_heatmap[history], linewidths=0.5, robust=True)
+        ax_heatmap[history].xaxis.tick_top() # x axis on top
+        ax_heatmap[history].xaxis.set_label_position('top')
+        ax_heatmap[history].set_xticklabels(["Precision", "Recall", "F1"], fontsize=12)
+        ax_heatmap[history].set_yticklabels(["Class %d"%i for i in range(10)]+["macro avg", "weighted avg", "Accuracy"], fontsize=12)
+        plt.setp(ax_heatmap[history].yaxis.get_majorticklabels(), rotation=0)
+        ax_heatmap[history].set_title("Classification Report", fontsize=15)
+
+
     ### plot all together test losses and metrics ###
     if num_of_histories > 2:
         ax0 = plt.subplot(gs[(num_of_histories-1)*num_of_offset:(num_of_histories-1)*num_of_offset+num_of_offset, 0])
+        ax1 = plt.subplot(gs[(num_of_histories-1)*num_of_offset:(num_of_histories-1)*num_of_offset+num_of_offset-1, 1:])
+        ax2 = plt.subplot(gs[(num_of_histories-1)*num_of_offset+1:(num_of_histories-1)*num_of_offset+num_of_offset, 1:])
 
-        subplot1 = plt.subplot(gs[(num_of_histories-1)*num_of_offset,1]) 
-        subplot1.grid(True)
+        # subplot1 = plt.subplot(gs[(num_of_histories-1)*num_of_offset,1]) 
+        # subplot1.grid(True)
 
-        subplot2 = plt.subplot(gs[(num_of_histories-1)*num_of_offset,2]) 
-        subplot2.grid(True)
+        # subplot2 = plt.subplot(gs[(num_of_histories-1)*num_of_offset,2]) 
+        # subplot2.grid(True)
 
-        subplot3 = plt.subplot(gs[(num_of_histories-1)*num_of_offset+1,1]) 
-        subplot3.grid(True)
+        # subplot3 = plt.subplot(gs[(num_of_histories-1)*num_of_offset+1,1]) 
+        # subplot3.grid(True)
 
-        subplot4 = plt.subplot(gs[(num_of_histories-1)*num_of_offset+1,2]) 
-        subplot4.grid(True)
-        for history in range(num_of_histories-1):
-            # accuracy
-            subplot1.plot(histories[history].history['val_accuracy'], label ='exp '+str(history+1))
-            subplot1.set_title("Accuracy")
-            # for val in (histories[history].history['accuracy'], histories[history].history['val_accuracy']):
-            #     subplot.annotate('%0.3f'%val[-1], xy=(1, val[-1]), xytext=(5, 0), textcoords='offset points', xycoords=('axes fraction', 'data'))
+        # subplot4 = plt.subplot(gs[(num_of_histories-1)*num_of_offset+1,2]) 
+        # subplot4.grid(True)
+        # for history in range(num_of_histories-1):
+        #     # accuracy
+        #     subplot1.plot(histories[history].history['val_accuracy'], label ='exp '+str(history+1))
+        #     subplot1.set_title("Accuracy")
+        #     # for val in (histories[history].history['accuracy'], histories[history].history['val_accuracy']):
+        #     #     subplot.annotate('%0.3f'%val[-1], xy=(1, val[-1]), xytext=(5, 0), textcoords='offset points', xycoords=('axes fraction', 'data'))
 
-            # precision
-            subplot2.plot(histories[history].history['val_Precision'], label ='exp '+str(history+1))
-            subplot2.set_title("Precision")
-            # for val in (histories[history].history['Precision'], histories[history].history['val_Precision']):
-            #     subplot.annotate('%0.3f'%val[-1], xy=(1, val[-1]), xytext=(5, 0), textcoords='offset points', xycoords=('axes fraction', 'data'))
+        #     # precision
+        #     subplot2.plot(histories[history].history['val_Precision'], label ='exp '+str(history+1))
+        #     subplot2.set_title("Precision")
+        #     # for val in (histories[history].history['Precision'], histories[history].history['val_Precision']):
+        #     #     subplot.annotate('%0.3f'%val[-1], xy=(1, val[-1]), xytext=(5, 0), textcoords='offset points', xycoords=('axes fraction', 'data'))
 
-            # recall
-            subplot3.plot(histories[history].history['val_Recall'], label ='exp '+str(history+1))
-            subplot3.set_title("Recall")
-            # for val in (histories[history].history['Recall'], histories[history].history['val_Recall']):
-            #     subplot.annotate('%0.3f'%val[-1], xy=(1, val[-1]), xytext=(5, 0), textcoords='offset points', xycoords=('axes fraction', 'data'))
+        #     # recall
+        #     subplot3.plot(histories[history].history['val_Recall'], label ='exp '+str(history+1))
+        #     subplot3.set_title("Recall")
+        #     # for val in (histories[history].history['Recall'], histories[history].history['val_Recall']):
+        #     #     subplot.annotate('%0.3f'%val[-1], xy=(1, val[-1]), xytext=(5, 0), textcoords='offset points', xycoords=('axes fraction', 'data'))
 
-            # f1
-            subplot4.plot(f1_val[history], label ='exp '+str(history+1))
-            subplot4.set_title("F1")
-            # for val in (f1[history], f1_val[history]):
-            #     subplot.annotate('%0.3f'%val[-1], xy=(1, val[-1]), xytext=(5, 0), textcoords='offset points', xycoords=('axes fraction', 'data'))
+        #     # f1
+        #     subplot4.plot(f1_val[history], label ='exp '+str(history+1))
+        #     subplot4.set_title("F1")
+        #     # for val in (f1[history], f1_val[history]):
+        #     #     subplot.annotate('%0.3f'%val[-1], xy=(1, val[-1]), xytext=(5, 0), textcoords='offset points', xycoords=('axes fraction', 'data'))
 
-        subplot1.legend()
-        subplot2.legend()
-        subplot3.legend()
-        subplot4.legend()
+        # subplot1.legend()
+        # subplot2.legend()
+        # subplot3.legend()
+        # subplot4.legend()
 
         for history in range(num_of_histories-1):
             # ax0.plot(histories[history].history['loss'], label ='loss')
@@ -402,6 +435,29 @@ def classifier_loss_visualization(histories):
             val = histories[history].history['val_loss'][-1]
             ax0.annotate('%0.5f exp %d'%(val, history), xy=(1, val), xytext=(5, 0), textcoords='offset points', xycoords=('axes fraction', 'data'))
             ax0.grid(True)
+
+            # scatter experimets
+            ax1.scatter(history, histories[history].history['loss'][-1], label="exp "+str(history+1)+" loss", marker="o")
+            ax1.scatter(history, histories[history].history['val_loss'][-1], label="exp "+str(history+1)+" val loss", marker="X")
+            ax1.grid(True)
+            ax1.legend()
+            ax1.set_xlabel('Experiments', fontsize=15)
+            ax1.set_ylabel('Accuracy', fontsize=15)
+            ax1.set_xticks(range(num_of_histories-1))
+            ax1.set_xticklabels(["exp "+str(x+1) for x in range(num_of_histories-1)])
+            ax1.set_xticks(range(num_of_histories-1), np.arange(1,num_of_histories-1))
+            ax1.set_title("Models' losses per hyperparameters", fontsize=15)
+
+            ax2.scatter(history, histories[history].history['accuracy'][-1], label="exp "+str(history+1)+" acc", marker="o")
+            ax2.scatter(history, histories[history].history['val_accuracy'][-1], label="exp "+str(history+1)+" val acc", marker="X")
+            ax2.grid(True)
+            ax2.legend()
+            ax2.set_xlabel('Experiments', fontsize=15)
+            ax2.set_ylabel('Loss', fontsize=15)
+            ax2.set_xticks(range(num_of_histories-1))
+            ax2.set_xticklabels(["exp "+str(x+1) for x in range(num_of_histories-1)])
+            ax2.set_xticks(range(num_of_histories-1), np.arange(1,num_of_histories-1))
+            ax2.set_title("Models' accuracy per hyperparameters", fontsize=15)
 
 
 
