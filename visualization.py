@@ -44,7 +44,7 @@ def print_model_info_autoencoder(model_info):
             decoder+="drop"
     decoder+=")"
     
-    hyper_parameters = "Optimizer: %s lr: %f batch_size: %d epochs: %d"%(model_info["optimizer"][0], model_info["optimizer"][1], model_info["batch_size"], model_info["epochs"])
+    hyper_parameters = "Optim: [%s] lr: %s batch_s: [%d] epochs: [%d]"%(model_info["optimizer"][0], model_info["optimizer"][1:], model_info["batch_size"], model_info["epochs"])
 
     return encoder+"\n"+decoder+"\n"+hyper_parameters
 
@@ -70,7 +70,7 @@ def print_model_info_classifier(model_info):
     classifier+=")"
 
     
-    hyper_parameters = "Optimizer: %s lr: %f batch_size: %d epochs_dense_only: %d epochs_all: %d"%(model_info["optimizer"][0], model_info["optimizer"][1], model_info["batch_size"], model_info["dense_only_train_epochs"], model_info["full_train_epochs"])
+    hyper_parameters = "Optim: [%s] lr: %s batch_s: [%d] epochs_dense: [%d] epochs_all: [%d]"%(model_info["optimizer"][0], str(model_info["optimizer"][1:]), model_info["batch_size"], model_info["dense_only_train_epochs"], model_info["full_train_epochs"])
 
     return classifier+"\n"+hyper_parameters
 
