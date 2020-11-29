@@ -292,7 +292,7 @@ def classifier_loss_visualization(histories):
     num_of_histories += 1
 
     plt.tight_layout()
-    fig = plt.figure(figsize=(22,8*num_of_histories))
+    fig = plt.figure(figsize=(24,8*num_of_histories))
     fig.suptitle("Visualization of Metrics for Every Experiment", fontsize=25)
 
     gs  = gridspec.GridSpec(num_of_offset*num_of_histories, 4, width_ratios=[0.35, 0.15, 0.15, 0.35], height_ratios=np.ones(num_of_offset*num_of_histories))
