@@ -75,6 +75,7 @@ def print_model_info_classifier(model_info):
     return classifier+"\n"+hyper_parameters
 
 # plot the loss for multiple models + some predicted data
+# plot the loss for multiple models + some predicted data
 def autoencoder_visualization(histories, train_data, num_of_test_images=4):
 
     # set plot surface
@@ -85,7 +86,7 @@ def autoencoder_visualization(histories, train_data, num_of_test_images=4):
     num_of_train_data = train_data.shape[0]
     x_dim = train_data.shape[1]
     y_dim = train_data.shape[2]
-    fig = plt.figure(figsize=(15,11*num_of_histories))
+    fig = plt.figure(figsize=(20,11*num_of_histories))
     fig.suptitle("Visualization of Loss with random True and their Predicted images for Every Experiment", fontsize=25)
 
     gs  = gridspec.GridSpec(num_of_test_images*num_of_histories, 3, width_ratios=[0.66, 0.165, 0.165], height_ratios=np.ones(num_of_test_images*num_of_histories))
@@ -102,6 +103,8 @@ def autoencoder_visualization(histories, train_data, num_of_test_images=4):
         ax0[history].set_ylabel('Loss', fontsize=15)
         ax0[history].legend(fontsize=15)
         ax0[history].grid(True)
+        for val in (histories[history].history['loss'], histories[history].history['val_loss'])[1:]:
+            ax0[history].annotate('%0.5f'%val[-1], xy=(1, val[-1]), xytext=(5, 0), textcoords='offset points', xycoords=('axes fraction', 'data'))
         # get model info
         model_info = print_model_info_autoencoder(histories[history].history['model_info'])
         ax0[history].set_title("Experiment: "+str(history+1)+"\n"+model_info+"\nModel loss", fontsize=15)
@@ -146,7 +149,6 @@ def autoencoder_visualization(histories, train_data, num_of_test_images=4):
         ax.set_ylabel('Loss', fontsize=15)
         ax.set_xticks(range(num_of_histories-1))
         ax.set_xticklabels(["exp "+str(x+1) for x in range(num_of_histories-1)])
-        ax.set_xticks(range(num_of_histories-1), np.arange(1,num_of_histories-1))
         ax.set_title("Models' losses per hyperparameters", fontsize=15)
 
 
@@ -292,7 +294,7 @@ def classifier_loss_visualization(histories):
     num_of_histories += 1
 
     plt.tight_layout()
-    fig = plt.figure(figsize=(24,8*num_of_histories))
+    fig = plt.figure(figsize=(25,8*num_of_histories))
     fig.suptitle("Visualization of Metrics for Every Experiment", fontsize=25)
 
     gs  = gridspec.GridSpec(num_of_offset*num_of_histories, 4, width_ratios=[0.35, 0.15, 0.15, 0.35], height_ratios=np.ones(num_of_offset*num_of_histories))
@@ -317,7 +319,7 @@ def classifier_loss_visualization(histories):
         # accuracy
         subplot = plt.subplot(gs[i,1]) 
         subplot.plot(histories[history].history['accuracy'], label ='accuracy')
-        subplot.plot(histories[history].history['val_accuracy'], label ='val accuracy')
+        subplot.plot(histories[history].history['val_accuracy'], label ='test accuracy')
         subplot.set_title("Accuracy")
         subplot.legend()
         for val in (histories[history].history['accuracy'], histories[history].history['val_accuracy'])[1:]:
@@ -326,7 +328,7 @@ def classifier_loss_visualization(histories):
         # precision
         subplot = plt.subplot(gs[i+1,1])
         subplot.plot(histories[history].history['Precision'], label ='precision')
-        subplot.plot(histories[history].history['val_Precision'], label ='val precision')
+        subplot.plot(histories[history].history['val_Precision'], label ='test precision')
         subplot.set_title("Precision")
         subplot.legend()
         for val in (histories[history].history['Precision'], histories[history].history['val_Precision'])[1:]:
@@ -335,7 +337,7 @@ def classifier_loss_visualization(histories):
         # recall
         subplot = plt.subplot(gs[i,2]) 
         subplot.plot(histories[history].history['Recall'], label ='recall')
-        subplot.plot(histories[history].history['val_Recall'], label ='val recall')
+        subplot.plot(histories[history].history['val_Recall'], label ='test recall')
         subplot.set_title("Recall")
         subplot.legend()
         for val in (histories[history].history['Recall'], histories[history].history['val_Recall'])[1:]:
@@ -344,7 +346,7 @@ def classifier_loss_visualization(histories):
         # f1
         subplot = plt.subplot(gs[i+1,2]) 
         subplot.plot(f1[history], label ='f1')
-        subplot.plot(f1_val[history], label ='val f1')
+        subplot.plot(f1_val[history], label ='test f1')
         subplot.set_title("F1")
         subplot.legend()
         for val in (f1[history], f1_val[history])[1:]:
@@ -355,7 +357,7 @@ def classifier_loss_visualization(histories):
     # plot loss and validation loss
     for history in range(num_of_histories-1):
         ax0[history].plot(histories[history].history['loss'], label ='loss')
-        ax0[history].plot(histories[history].history['val_loss'], label='val loss')
+        ax0[history].plot(histories[history].history['val_loss'], label='test loss')
         ax0[history].set_xlabel('Epoch', fontsize=15)
         ax0[history].set_ylabel('Loss', fontsize=15)
         ax0[history].legend(fontsize=15)
@@ -374,7 +376,9 @@ def classifier_loss_visualization(histories):
         ax_heatmap[history].set_xticklabels(["Precision", "Recall", "F1"], fontsize=12)
         ax_heatmap[history].set_yticklabels(["Class %d"%i for i in range(10)]+["macro avg", "weighted avg", "Accuracy"], fontsize=12)
         plt.setp(ax_heatmap[history].yaxis.get_majorticklabels(), rotation=0)
-        ax_heatmap[history].set_title("Classification Report", fontsize=15)
+        num_of_correct = histories[history].history['num_of_correct']
+        num_of_incorrect = histories[history].history['num_of_incorrect']
+        ax_heatmap[history].set_title("Classification Report on Test Data\nTested: %d images\nCorrect: %d Incorrect: %d"%(num_of_correct+num_of_incorrect, num_of_correct, num_of_incorrect), fontsize=15)
 
 
     ### plot all together test losses and metrics ###
@@ -430,7 +434,7 @@ def classifier_loss_visualization(histories):
             ax0.set_xlabel('Epoch', fontsize=15)
             ax0.set_ylabel('Loss', fontsize=15)
             ax0.legend(fontsize=15)
-            ax0.set_title("Models' losses", fontsize=15)
+            ax0.set_title("Models' losses on test set", fontsize=15)
             # for val in [ histories[h].history['val_loss'] for h in range(num_of_histories-1) ]:
             val = histories[history].history['val_loss'][-1]
             ax0.annotate('%0.5f exp %d'%(val, history), xy=(1, val), xytext=(5, 0), textcoords='offset points', xycoords=('axes fraction', 'data'))
@@ -438,7 +442,7 @@ def classifier_loss_visualization(histories):
 
             # scatter experimets
             ax1.scatter(history, histories[history].history['loss'][-1], label="exp "+str(history+1)+" loss", marker="o")
-            ax1.scatter(history, histories[history].history['val_loss'][-1], label="exp "+str(history+1)+" val loss", marker="X")
+            ax1.scatter(history, histories[history].history['val_loss'][-1], label="exp "+str(history+1)+" test loss", marker="X")
             ax1.grid(True)
             ax1.legend()
             ax1.set_xlabel('Experiments', fontsize=15)
@@ -449,7 +453,7 @@ def classifier_loss_visualization(histories):
             ax1.set_title("Models' losses per hyperparameters", fontsize=15)
 
             ax2.scatter(history, histories[history].history['accuracy'][-1], label="exp "+str(history+1)+" acc", marker="o")
-            ax2.scatter(history, histories[history].history['val_accuracy'][-1], label="exp "+str(history+1)+" val acc", marker="X")
+            ax2.scatter(history, histories[history].history['val_accuracy'][-1], label="exp "+str(history+1)+" test acc", marker="X")
             ax2.grid(True)
             ax2.legend()
             ax2.set_xlabel('Experiments', fontsize=15)

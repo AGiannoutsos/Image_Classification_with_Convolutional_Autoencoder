@@ -314,7 +314,7 @@ def main():
         print(bcolors.BOLD+'\nTRAINING'+bcolors.ENDC)
         print(bcolors.BOLD+'----------------------------------------------------'+bcolors.ENDC)
         print(train_X.shape)
-        histories.append(train_Classifier(classifier, model_info, train_X, train_Y, 0.1))
+        histories.append(train_Classifier(classifier, model_info, train_X, train_Y, test_X, test_Y))
 
         # Check what user wants to do next
         endOfExperiment = False
