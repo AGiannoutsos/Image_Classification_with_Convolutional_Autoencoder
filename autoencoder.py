@@ -286,7 +286,7 @@ def main():
     if not os.path.isfile(datasetFile):
         print(bcolors.FAIL+'Error: invalid path.'+bcolors.ENDC)
         sys.exit()
-    data = normalize(load_mnist(datasetFile))[0:100]
+    data = normalize(load_mnist(datasetFile))
     
     # Executer experiment
     histories = list()

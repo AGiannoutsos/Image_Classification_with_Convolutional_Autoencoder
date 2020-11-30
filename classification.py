@@ -91,7 +91,7 @@ def read_hyperparameters():
     # Number of convolutional layers on Dense
     validInput = False
     while not validInput:
-        numOfLayers = input(bcolors.OKCYAN+'Give number of convolutional layers on dense: '+bcolors.ENDC)
+        numOfLayers = input(bcolors.OKCYAN+'Give number of layers on dense: '+bcolors.ENDC)
         try:
             numOfLayers = int(numOfLayers)
             if numOfLayers > 0:
@@ -333,24 +333,27 @@ def main():
                     validInput = False
                     while not validInput:
                         model_info = input(bcolors.OKCYAN+'Please add your model\'s path: '+bcolors.ENDC)
-                        if os.path.isfile(model_info):
+                        if os.path.exists(model_info):
                             validInput = True
                         else:
                             print(bcolors.FAIL+'Error: invalid path.'+bcolors.ENDC)
                     print(bcolors.OKCYAN+'Images classification.'+bcolors.ENDC)
                     classifier_prediction_visualization(load_model(model_info), test_X, test_Y)
                 else:
-                    validInput = False
-                    while not validInput:
-                        modelNum = input(bcolors.OKCYAN+'Which model you want to use? (choices: 1-'+len(histories)+') '+bcolors.ENDC)
-                        try:
-                            modelNum = int(modelNum)-1
-                            if modelNum >= 0 and modelNum < len(histories):
-                                validInput = True
-                            else:
+                    if len(histories) > 1:
+                        validInput = False
+                        while not validInput:
+                            modelNum = input(bcolors.OKCYAN+'Which model you want to use? (choices: 1-'+str(len(histories))+') '+bcolors.ENDC)
+                            try:
+                                modelNum = int(modelNum)-1
+                                if modelNum >= 0 and modelNum < len(histories):
+                                    validInput = True
+                                else:
+                                    print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
+                            except ValueError:
                                 print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
-                        except ValueError:
-                            print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
+                    else:
+                        modelNum = 1
                     print(bcolors.OKCYAN+'Images classification.'+bcolors.ENDC)
                     classifier_prediction_visualization(histories[modelNum].model, test_X, test_Y)
             elif choice == '4':
