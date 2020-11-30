@@ -268,7 +268,7 @@ def read_hyperparameters():
 
 # Main Function
 def main():
-    print('argument list:', str(sys.argv))
+    # print('argument list:', str(sys.argv))
 
     # Reading inline arguments
     if '-d' not in sys.argv:

@@ -160,30 +160,30 @@ def read_hyperparameters():
     # Number of dense epochs
     validInput = False
     while not validInput:
-        dense_only_epochs = input(bcolors.OKCYAN+'Give number of epochs: '+bcolors.ENDC)
+        dense_only_train_epochs = input(bcolors.OKCYAN+'Give number of dense train epochs: '+bcolors.ENDC)
         try:
-            dense_only_epochs = int(dense_only_epochs)
-            if dense_only_epochs > 0:
+            dense_only_train_epochs = int(dense_only_train_epochs)
+            if dense_only_train_epochs > 0:
                 validInput = True
             else:
                 print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
         except ValueError:
             print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
-    model_info['dense_only_epochs'] = dense_only_epochs
+    model_info['dense_only_train_epochs'] = dense_only_train_epochs
 
     # Number of full model epochs
     validInput = False
     while not validInput:
-        full_model_epochs = input(bcolors.OKCYAN+'Give number of epochs: '+bcolors.ENDC)
+        full_train_epochs = input(bcolors.OKCYAN+'Give number of total epochs: '+bcolors.ENDC)
         try:
-            full_model_epochs = int(full_model_epochs)
-            if full_model_epochs > 0:
+            full_train_epochs = int(full_train_epochs)
+            if full_train_epochs > 0:
                 validInput = True
             else:
                 print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
         except ValueError:
             print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
-    model_info['full_model_epochs'] = full_model_epochs
+    model_info['full_train_epochs'] = full_train_epochs
     
     # Batch size
     validInput = False
@@ -197,6 +197,9 @@ def read_hyperparameters():
                 print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
         except ValueError:
              print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
+    model_info['batch_size'] = batch_size
+
+    model_info['optimizer'] = ["adam", 0.001]
 
     print(model_info)
     return model_info
@@ -204,7 +207,7 @@ def read_hyperparameters():
 
 # Main Function
 def main():
-    print('argument list:', str(sys.argv))
+    # print('argument list:', str(sys.argv))
     model_info = {}
 
     # Reading inline arguments
@@ -263,7 +266,6 @@ def main():
             print(bcolors.WARNING+'Executable should be called:', sys.argv[0], ' –d <training_set> –dl <training_labels> -t <test_set> -tl <test_labels> -model <autoencoder_h5>'+bcolors.ENDC)
             sys.exit()
         encoder = sys.argv[sys.argv.index('-model')+1]
-        model_info["encoder_layers"] = encoder
 
     # Reading training and test sets
     if not os.path.isfile(datasetFile):
@@ -307,6 +309,7 @@ def main():
         else:
             # Reading hyperparameters from user
             model_info = read_hyperparameters()
+            model_info["encoder_layers"] = encoder
 
         classifier = get_Classifier(model_info, train_X.shape[1:], 10)
         
