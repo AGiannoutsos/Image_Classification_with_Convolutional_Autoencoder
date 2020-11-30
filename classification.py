@@ -6,10 +6,12 @@ import sys
 import struct
 import json
 from array import array as pyarray
+import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
 from keras.utils import to_categorical, normalize
 # inport our files
 from model import get_Classifier, train_Classifier
-from visualization import classifier_prediction_visualization, classifier_loss_visualization
+from visualization import classifier_prediction_visualization_window, classifier_loss_visualization_window, classifier_prediction_visualization
 
 # Define class with colors for UI improvement
 class bcolors:
@@ -314,7 +316,7 @@ def main():
         print(bcolors.BOLD+'\nTRAINING'+bcolors.ENDC)
         print(bcolors.BOLD+'----------------------------------------------------'+bcolors.ENDC)
         print(train_X.shape)
-        histories.append(train_Classifier(classifier, model_info, train_X, train_Y, test_X, test_Y))
+        histories.append(train_Classifier(classifier, model_info, train_X[0:100], train_Y[0:100], test_X[0:100], test_Y[0:100]))
 
         # Check what user wants to do next
         endOfExperiment = False
@@ -330,10 +332,10 @@ def main():
                 endOfExperiment = True
             elif choice == '2':
                 print(bcolors.OKCYAN+'Showing graphs.'+bcolors.ENDC)
-                classifier_loss_visualization(histories)
+                classifier_loss_visualization_window(histories)
             elif choice == '3':
                 print(bcolors.OKCYAN+'Images classification.'+bcolors.ENDC)
-                classifier_prediction_visualization(histories[-1], test_X, test_Y)
+                classifier_prediction_visualization_window(histories[-1].model, test_X, test_Y)
             elif choice == '4':
                 print(bcolors.BOLD+bcolors.OKCYAN+'Exiting Program.\n'+bcolors.ENDC)
                 endOfExperiment = True

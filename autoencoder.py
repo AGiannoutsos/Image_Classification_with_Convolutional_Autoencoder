@@ -9,7 +9,7 @@ from array import array as pyarray
 from keras.utils import normalize
 # inport our files
 from model import get_Autoencoder, train_Autoencoder
-from visualization import autoencoder_visualization
+from visualization import autoencoder_visualization_window
 
 # Define class with colors for UI improvement
 class bcolors:
@@ -76,7 +76,7 @@ def read_hyperparameters():
     # Number of convolutional layers on Encoder
     validInput = False
     while not validInput:
-        numOfLayers = input(bcolors.OKCYAN+'Give number of convolutional layers on encoder: '+bcolors.ENDC)
+        numOfLayers = input(bcolors.OKCYAN+'Give number of layers on encoder: '+bcolors.ENDC)
         try:
             numOfLayers = int(numOfLayers)
             if numOfLayers > 0:
@@ -150,7 +150,7 @@ def read_hyperparameters():
     # Number of convolutional layers on Decoder
     validInput = False
     while not validInput:
-        numOfLayers = input(bcolors.OKCYAN+'Give number of convolutional layers on decoder: '+bcolors.ENDC)
+        numOfLayers = input(bcolors.OKCYAN+'Give number of layers on decoder: '+bcolors.ENDC)
         try:
             numOfLayers = int(numOfLayers)
             if numOfLayers > 0:
@@ -286,7 +286,7 @@ def main():
     if not os.path.exists(datasetFile):
         print(bcolors.FAIL+'Error: invalid path.'+bcolors.ENDC)
         sys.exit()
-    data = normalize(load_mnist(datasetFile))
+    data = normalize(load_mnist(datasetFile))[0:100]
     
     # Executer experiment
     histories = list()
@@ -334,7 +334,7 @@ def main():
                 endOfExperiment = True
             elif choice == '2':
                 print(bcolors.OKCYAN+'Showing graphs.'+bcolors.ENDC)
-                autoencoder_visualization(histories, data)
+                autoencoder_visualization_window(histories, data)
             elif choice == '3':
                 savePath = input(bcolors.OKCYAN+'Save model on: '+bcolors.ENDC)
                 autoencoder.save(savePath)
