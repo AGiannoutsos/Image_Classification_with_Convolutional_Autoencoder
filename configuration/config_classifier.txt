@@ -1,1 +1,1 @@
-{"model_info": {"dense_layers": [["dense", 50], ["dense", 20]], "encoder_layers": "here.h5", "batch_size": 32, "dense_only_train_epochs": 1, "full_train_epochs": 1, "optimizer": ["adam", 0.001]}}
+{"model_info": {"optimizer": ["adam", 0.001, 1e-05], "batch_size": 32, "dense_layers": [["dense", 64], ["drop", 0.5], ["dense", 32]], "dense_only_train_epochs": 16, "full_train_epochs": 8}}

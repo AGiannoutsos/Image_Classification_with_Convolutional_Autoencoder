@@ -36,20 +36,20 @@ data = {}
 #         "optimizer" :       ["adam", 0.01]
 # }
 
-data['model_info'] = {
-    "dense_layers": [["dense", 50],
-                    ["dense", 20]]
-    ,
-    "encoder_layers" : "here.h5"
-    ,
-    "batch_size":   32
-    ,
-    "dense_only_train_epochs": 1
-    ,
-    "full_train_epochs": 1
-    ,
-    "optimizer" :   ["adam", 0.001]
-}
+data['model_info'] = {"dense_layers" : [["dense", 64],
+                                        ["drop", 0.5],
+                                    ["dense", 32]]
+                    ,
+                    "encoder_layers" : "small_model.h5"
+                    ,
+                    "optimizer" :   ["adam", 0.001, 1e-5]
+                    ,
+                    "dense_only_train_epochs": 16
+                    ,
+                    "full_train_epochs": 8
+                    ,
+                    "batch_size": 32
+                    }
 
 with open('config_classifier.txt', 'w') as out:
     json.dump(data, out)
