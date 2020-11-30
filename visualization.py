@@ -505,7 +505,7 @@ def classifier_prediction_visualization(model, test_data, test_labels, num_of_te
     for i, pred in enumerate(prediction):
         if pred != np.argmax(test_labels[i], axis=0): 
             wrong_predictions.append(i)
-    print(len(wrong_predictions))
+    # print(len(wrong_predictions))
 
     # title
     title_ax = plt.subplot(gs[heatmap_report_size+confusion_matrix_size,:])

@@ -9,6 +9,7 @@ from array import array as pyarray
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 from keras.utils import to_categorical, normalize
+from keras.models import load_model
 # inport our files
 from model import get_Classifier, train_Classifier
 from visualization import classifier_prediction_visualization_window, classifier_loss_visualization_window, classifier_prediction_visualization
@@ -28,7 +29,7 @@ class bcolors:
 # Define class for reading data from MNIST file
 def load_mnist(dataset, digits=np.arange(10), type='data', numOfElements=-1):
     intType = np.dtype( 'int32' ).newbyteorder( '>' )
-    if not os.path.exists(dataset):
+    if not os.path.isfile(dataset):
         return None
     fname = os.path.join(".", dataset)
     if (type == 'data'):
@@ -73,7 +74,7 @@ def read_hyperparameters():
         validInput = False
         while not validInput:
             confName = input(bcolors.OKCYAN+'Please add your configuration\'s path: '+bcolors.ENDC)
-            if os.path.exists(confName):
+            if os.path.isfile(confName):
                 with open(confName) as json_file:
                     try:
                         data = json.load(json_file)
@@ -162,30 +163,30 @@ def read_hyperparameters():
     # Number of dense epochs
     validInput = False
     while not validInput:
-        dense_only_epochs = input(bcolors.OKCYAN+'Give number of epochs: '+bcolors.ENDC)
+        dense_only_train_epochs = input(bcolors.OKCYAN+'Give number of dense train epochs: '+bcolors.ENDC)
         try:
-            dense_only_epochs = int(dense_only_epochs)
-            if dense_only_epochs > 0:
+            dense_only_train_epochs = int(dense_only_train_epochs)
+            if dense_only_train_epochs > 0:
                 validInput = True
             else:
                 print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
         except ValueError:
             print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
-    model_info['dense_only_epochs'] = dense_only_epochs
+    model_info['dense_only_train_epochs'] = dense_only_train_epochs
 
     # Number of full model epochs
     validInput = False
     while not validInput:
-        full_model_epochs = input(bcolors.OKCYAN+'Give number of epochs: '+bcolors.ENDC)
+        full_train_epochs = input(bcolors.OKCYAN+'Give number of total epochs: '+bcolors.ENDC)
         try:
-            full_model_epochs = int(full_model_epochs)
-            if full_model_epochs > 0:
+            full_train_epochs = int(full_train_epochs)
+            if full_train_epochs > 0:
                 validInput = True
             else:
                 print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
         except ValueError:
             print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
-    model_info['full_model_epochs'] = full_model_epochs
+    model_info['full_train_epochs'] = full_train_epochs
     
     # Batch size
     validInput = False
@@ -199,6 +200,9 @@ def read_hyperparameters():
                 print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
         except ValueError:
              print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
+    model_info['batch_size'] = batch_size
+
+    model_info['optimizer'] = ["adam", 0.001]
 
     print(model_info)
     return model_info
@@ -206,7 +210,7 @@ def read_hyperparameters():
 
 # Main Function
 def main():
-    print('argument list:', str(sys.argv))
+    # print('argument list:', str(sys.argv))
     model_info = {}
 
     # Reading inline arguments
@@ -265,22 +269,21 @@ def main():
             print(bcolors.WARNING+'Executable should be called:', sys.argv[0], ' –d <training_set> –dl <training_labels> -t <test_set> -tl <test_labels> -model <autoencoder_h5>'+bcolors.ENDC)
             sys.exit()
         encoder = sys.argv[sys.argv.index('-model')+1]
-        model_info["encoder_layers"] = encoder
 
     # Reading training and test sets
-    if not os.path.exists(datasetFile):
+    if not os.path.isfile(datasetFile):
         print(bcolors.FAIL+'Error: invalid path.'+bcolors.ENDC)
         sys.exit()
     train_X = normalize(load_mnist(datasetFile, type='data'))
-    if not os.path.exists(dlabelsFile):
+    if not os.path.isfile(dlabelsFile):
         print(bcolors.FAIL+'Error: invalid path.'+bcolors.ENDC)
         sys.exit()
     train_Y = to_categorical(load_mnist(dlabelsFile, type='labels'))
-    if not os.path.exists(testsetFile):
+    if not os.path.isfile(testsetFile):
         print(bcolors.FAIL+'Error: invalid path.'+bcolors.ENDC)
         sys.exit()
     test_X = normalize(load_mnist(testsetFile, type='data'))
-    if not os.path.exists(tlabelsFile):
+    if not os.path.isfile(tlabelsFile):
         print(bcolors.FAIL+'Error: invalid path.'+bcolors.ENDC)
         sys.exit()
     test_Y = to_categorical(load_mnist(tlabelsFile, type='labels'))
@@ -290,25 +293,9 @@ def main():
     histories = list()
     repeat = True
     while repeat:
-        # Ask if there is already saved model
-        validInput = False
-        while not validInput:
-            answer = input(bcolors.OKCYAN+'Do you want to import already existed model? (answer: y|n) '+bcolors.ENDC)
-            if answer == 'y' or answer == 'Y' or answer == 'n' or answer == 'N':
-                validInput = True
-            else:
-                print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
-        if answer == 'y' or answer == 'Y':
-            validInput = False
-            while not validInput:
-                model_info = input(bcolors.OKCYAN+'Please add your model\'s path: '+bcolors.ENDC)
-                if os.path.exists(model_info):
-                    validInput = True
-                else:
-                    print(bcolors.FAIL+'Error: invalid path.'+bcolors.ENDC)
-        else:
-            # Reading hyperparameters from user
-            model_info = read_hyperparameters()
+        # Reading hyperparameters from user
+        model_info = read_hyperparameters()
+        model_info["encoder_layers"] = encoder
 
         classifier = get_Classifier(model_info, train_X.shape[1:], 10)
         
@@ -334,8 +321,38 @@ def main():
                 print(bcolors.OKCYAN+'Showing graphs.'+bcolors.ENDC)
                 classifier_loss_visualization_window(histories)
             elif choice == '3':
-                print(bcolors.OKCYAN+'Images classification.'+bcolors.ENDC)
-                classifier_prediction_visualization_window(histories[-1].model, test_X, test_Y)
+                # Ask if user wants to test a saved model
+                validInput = False
+                while not validInput:
+                    answer = input(bcolors.OKCYAN+'Do you want to import already existed model? (answer: y|n) '+bcolors.ENDC)
+                    if answer == 'y' or answer == 'Y' or answer == 'n' or answer == 'N':
+                        validInput = True
+                    else:
+                        print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
+                if answer == 'y' or answer == 'Y':
+                    validInput = False
+                    while not validInput:
+                        model_info = input(bcolors.OKCYAN+'Please add your model\'s path: '+bcolors.ENDC)
+                        if os.path.isfile(model_info):
+                            validInput = True
+                        else:
+                            print(bcolors.FAIL+'Error: invalid path.'+bcolors.ENDC)
+                    print(bcolors.OKCYAN+'Images classification.'+bcolors.ENDC)
+                    classifier_prediction_visualization(load_model(model_info), test_X, test_Y)
+                else:
+                    validInput = False
+                    while not validInput:
+                        modelNum = input(bcolors.OKCYAN+'Which model you want to use? (choices: 1-'+len(histories)+') '+bcolors.ENDC)
+                        try:
+                            modelNum = int(modelNum)-1
+                            if modelNum >= 0 and modelNum < len(histories):
+                                validInput = True
+                            else:
+                                print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
+                        except ValueError:
+                            print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
+                    print(bcolors.OKCYAN+'Images classification.'+bcolors.ENDC)
+                    classifier_prediction_visualization(histories[modelNum].model, test_X, test_Y)
             elif choice == '4':
                 print(bcolors.BOLD+bcolors.OKCYAN+'Exiting Program.\n'+bcolors.ENDC)
                 endOfExperiment = True

@@ -27,7 +27,7 @@ class bcolors:
 # Define class for reading data from MNIST file
 def load_mnist(dataset, digits=np.arange(10), type='data', numOfElements=-1):
     intType = np.dtype( 'int32' ).newbyteorder( '>' )
-    if not os.path.exists(dataset):
+    if not os.path.isfile(dataset):
         return None
     fname = os.path.join(".", dataset)
     if (type == 'data'):
@@ -59,7 +59,7 @@ def read_hyperparameters():
         validInput = False
         while not validInput:
             confName = input(bcolors.OKCYAN+'Please add your configuration\'s path: '+bcolors.ENDC)
-            if os.path.exists(confName):
+            if os.path.isfile(confName):
                 with open(confName) as json_file:
                     try:
                         data = json.load(json_file)
@@ -268,7 +268,7 @@ def read_hyperparameters():
 
 # Main Function
 def main():
-    print('argument list:', str(sys.argv))
+    # print('argument list:', str(sys.argv))
 
     # Reading inline arguments
     if '-d' not in sys.argv:
@@ -283,7 +283,7 @@ def main():
         datasetFile = sys.argv[sys.argv.index('-d')+1]
 
     # Reading dataset
-    if not os.path.exists(datasetFile):
+    if not os.path.isfile(datasetFile):
         print(bcolors.FAIL+'Error: invalid path.'+bcolors.ENDC)
         sys.exit()
     data = normalize(load_mnist(datasetFile))[0:100]
@@ -292,25 +292,8 @@ def main():
     histories = list()
     repeat = True
     while repeat:
-        # Ask if there is already saved model
-        validInput = False
-        while not validInput:
-            answer = input(bcolors.OKCYAN+'Do you want to import already existed model? (answer: y|n) '+bcolors.ENDC)
-            if answer == 'y' or answer == 'Y' or answer == 'n' or answer == 'N':
-                validInput = True
-            else:
-                print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
-        if answer == 'y' or answer == 'Y':
-            validInput = False
-            while not validInput:
-                model_info = input(bcolors.OKCYAN+'Please add your model\'s path: '+bcolors.ENDC)
-                if os.path.exists(model_info):
-                    validInput = True
-                else:
-                    print(bcolors.FAIL+'Error: invalid path.'+bcolors.ENDC)
-        else:
-            # Reading hyperparameters from user
-            model_info = read_hyperparameters()
+        # Reading hyperparameters from user
+        model_info = read_hyperparameters()
         
         autoencoder = get_Autoencoder(model_info, data.shape[1:])
 
