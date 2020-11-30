@@ -338,7 +338,7 @@ def main():
                         else:
                             print(bcolors.FAIL+'Error: invalid path.'+bcolors.ENDC)
                     print(bcolors.OKCYAN+'Images classification.'+bcolors.ENDC)
-                    classifier_prediction_visualization(load_model(model_info), test_X, test_Y)
+                    classifier_prediction_visualization_window(load_model(model_info), test_X, test_Y)
                 else:
                     if len(histories) > 1:
                         validInput = False
@@ -353,9 +353,9 @@ def main():
                             except ValueError:
                                 print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
                     else:
-                        modelNum = 1
+                        modelNum = 0
                     print(bcolors.OKCYAN+'Images classification.'+bcolors.ENDC)
-                    classifier_prediction_visualization(histories[modelNum].model, test_X, test_Y)
+                    classifier_prediction_visualization_window(histories[modelNum].model, test_X, test_Y)
             elif choice == '4':
                 print(bcolors.BOLD+bcolors.OKCYAN+'Exiting Program.\n'+bcolors.ENDC)
                 endOfExperiment = True
