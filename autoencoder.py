@@ -292,25 +292,8 @@ def main():
     histories = list()
     repeat = True
     while repeat:
-        # Ask if there is already saved model
-        validInput = False
-        while not validInput:
-            answer = input(bcolors.OKCYAN+'Do you want to import already existed model? (answer: y|n) '+bcolors.ENDC)
-            if answer == 'y' or answer == 'Y' or answer == 'n' or answer == 'N':
-                validInput = True
-            else:
-                print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
-        if answer == 'y' or answer == 'Y':
-            validInput = False
-            while not validInput:
-                model_info = input(bcolors.OKCYAN+'Please add your model\'s path: '+bcolors.ENDC)
-                if os.path.isfile(model_info):
-                    validInput = True
-                else:
-                    print(bcolors.FAIL+'Error: invalid path.'+bcolors.ENDC)
-        else:
-            # Reading hyperparameters from user
-            model_info = read_hyperparameters()
+        # Reading hyperparameters from user
+        model_info = read_hyperparameters()
         
         autoencoder = get_Autoencoder(model_info, data.shape[1:])
 

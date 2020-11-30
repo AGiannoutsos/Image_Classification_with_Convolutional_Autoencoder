@@ -7,6 +7,7 @@ import struct
 import json
 from array import array as pyarray
 from keras.utils import to_categorical, normalize
+from keras.models import load_model
 # inport our files
 from model import get_Classifier, train_Classifier
 from visualization import classifier_prediction_visualization, classifier_loss_visualization
@@ -290,26 +291,9 @@ def main():
     histories = list()
     repeat = True
     while repeat:
-        # Ask if there is already saved model
-        validInput = False
-        while not validInput:
-            answer = input(bcolors.OKCYAN+'Do you want to import already existed model? (answer: y|n) '+bcolors.ENDC)
-            if answer == 'y' or answer == 'Y' or answer == 'n' or answer == 'N':
-                validInput = True
-            else:
-                print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
-        if answer == 'y' or answer == 'Y':
-            validInput = False
-            while not validInput:
-                model_info = input(bcolors.OKCYAN+'Please add your model\'s path: '+bcolors.ENDC)
-                if os.path.isfile(model_info):
-                    validInput = True
-                else:
-                    print(bcolors.FAIL+'Error: invalid path.'+bcolors.ENDC)
-        else:
-            # Reading hyperparameters from user
-            model_info = read_hyperparameters()
-            model_info["encoder_layers"] = encoder
+        # Reading hyperparameters from user
+        model_info = read_hyperparameters()
+        model_info["encoder_layers"] = encoder
 
         classifier = get_Classifier(model_info, train_X.shape[1:], 10)
         
@@ -335,8 +319,38 @@ def main():
                 print(bcolors.OKCYAN+'Showing graphs.'+bcolors.ENDC)
                 classifier_loss_visualization(histories)
             elif choice == '3':
-                print(bcolors.OKCYAN+'Images classification.'+bcolors.ENDC)
-                classifier_prediction_visualization(histories[-1], test_X, test_Y)
+                # Ask if user wants to test a saved model
+                validInput = False
+                while not validInput:
+                    answer = input(bcolors.OKCYAN+'Do you want to import already existed model? (answer: y|n) '+bcolors.ENDC)
+                    if answer == 'y' or answer == 'Y' or answer == 'n' or answer == 'N':
+                        validInput = True
+                    else:
+                        print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
+                if answer == 'y' or answer == 'Y':
+                    validInput = False
+                    while not validInput:
+                        model_info = input(bcolors.OKCYAN+'Please add your model\'s path: '+bcolors.ENDC)
+                        if os.path.isfile(model_info):
+                            validInput = True
+                        else:
+                            print(bcolors.FAIL+'Error: invalid path.'+bcolors.ENDC)
+                    print(bcolors.OKCYAN+'Images classification.'+bcolors.ENDC)
+                    classifier_prediction_visualization(load_model(model_info), test_X, test_Y)
+                else:
+                    validInput = False
+                    while not validInput:
+                        modelNum = input(bcolors.OKCYAN+'Which model you want to use? (choices: 1-'+len(histories)+') '+bcolors.ENDC)
+                        try:
+                            modelNum = int(modelNum)-1
+                            if modelNum >= 0 and modelNum < len(histories):
+                                validInput = True
+                            else:
+                                print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
+                        except ValueError:
+                            print(bcolors.FAIL+'Error: invalid input.'+bcolors.ENDC)
+                    print(bcolors.OKCYAN+'Images classification.'+bcolors.ENDC)
+                    classifier_prediction_visualization(histories[modelNum].model, test_X, test_Y)
             elif choice == '4':
                 print(bcolors.BOLD+bcolors.OKCYAN+'Exiting Program.\n'+bcolors.ENDC)
                 endOfExperiment = True
