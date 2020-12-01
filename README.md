@@ -32,15 +32,15 @@ Written digits images classification with Convolutional Autoencoders in Keras
 <h4>
   
   Main Directory:
-    configuration/<br>        # Directory with hyperparameters configurations, saved on JSON form.<br>
-    data/<br>                 # Directory with data files.<br>
-    models/<br>               # Directory where models are saved.<br>
-    autoencoder.py<br>        # Autoencoder script.<br>
-    classification.py<br>     # Classifier script.<br>
-    model.py<br>              # Contains functions that are used for the Neural Network creation, train and test.<br>
-    test.py<br>               # Creates the configuration files.<br>
-    visualization.py<br>      # Contains functions that are used on the visualization of the Neural Network results and predictions.<br>
-    experiments.ipynb<br>     # The python notebook that we run on colab.<br>
+    configuration/<br>        # Directory with hyperparameters configurations, saved on JSON form.<br><br>
+    data/<br>                 # Directory with data files.<br><br>
+    models/<br>               # Directory where models are saved.<br><br>
+    autoencoder.py<br>        # Autoencoder script.<br><br>
+    classification.py<br>     # Classifier script.<br><br>
+    model.py<br>              # Contains functions that are used for the Neural Network creation, train and test.<br><br>
+    test.py<br>               # Creates the configuration files.<br><br>
+    visualization.py<br>      # Contains functions that are used on the visualization of the Neural Network results and predictions.<br><br>
+    experiments.ipynb<br>     # The python notebook that we run on colab.<br><br>
     
 </h4>
 
