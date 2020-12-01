@@ -21,20 +21,27 @@ Written digits images classification with Convolutional Autoencoders in Keras
   To run it with google Colab:
 </h4>
 
+<ΒΑΛΕ ΤΟ ΛΙΝΚ>
    [![Click here to open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Niranjankumar-c/DeepLearning-PadhAI/blob/master/DeepLearning_Materials/2_OverFitting_Regularization_NeuralNetworks/OverfittingAndRegularisation.ipynb)
 
 <h3>How we tested that it works</h3>
 <h4>
-</h4>
+  We tested our (.py) scripts with every possible combination, based on the project requests. For better performance we used google colab which provides powerfull hardware with memory and GPU. Google Colab minimized the time that each experiment took. We tested many hyperparameters' combinations and found some very good models with good performance and small loss. These two were the creterions which we used to consider which experiment was the best.
+</h4> 
 
-<h3>Test and research of W parameter</h3>
+<h3>Project Directories and Files organization</h3><br>
 <h4>
-</h4>
- 
-
-<h3>Project Directories and Files organization</h3>
-<h4>
-</h4>
+  Main Directory:<br>
+    configuration/<br>        # Directory with hyperparameters configurations, saved on JSON form.<br>
+    data/<br>                 # Directory with data files.<br>
+    models/<br>               # Directory where models are saved.<br>
+    autoencoder.py<br>        # Autoencoder script.<br>
+    classification.py<br>     # Classifier script.<br>
+    model.py<br>              # Contains functions that are used for the Neural Network creation, train and test.<br>
+    test.py<br>               # Creates the configuration files.<br>
+    visualization.py<br>      # Contains functions that are used on the visualization of the Neural Network results and predictions.<br>
+    experiments.ipynb<br>     # The python notebook that we run on colab.<br>
+<h4\>
 
 <h3>Implementation Details</h3>
 <h4>
