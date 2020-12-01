@@ -21,8 +21,7 @@ Written digits images classification with Convolutional Autoencoders in Keras
   To run it with google Colab:
 </h4>
 
-<ΒΑΛΕ ΤΟ ΛΙΝΚ>
-   [![Click here to open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Niranjankumar-c/DeepLearning-PadhAI/blob/master/DeepLearning_Materials/2_OverFitting_Regularization_NeuralNetworks/OverfittingAndRegularisation.ipynb)
+   [![Click here to open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github.com/AGiannoutsos/Image_Classification_with_Convolutional_Autoencoder/blob/main/experiments.ipynb)
 
 <h3>How we tested that it works</h3>
 <h4>
