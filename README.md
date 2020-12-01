@@ -32,20 +32,20 @@ Written digits images classification with Convolutional Autoencoders in Keras
 <h4>
   
   Main Directory:
-    configuration/<br>        # Directory with hyperparameters configurations, saved on JSON form.<br><br>
-    data/<br>                 # Directory with data files.<br><br>
-    models/<br>               # Directory where models are saved.<br><br>
-    autoencoder.py<br>        # Autoencoder script.<br><br>
-    classification.py<br>     # Classifier script.<br><br>
-    model.py<br>              # Contains functions that are used for the Neural Network creation, train and test.<br><br>
-    test.py<br>               # Creates the configuration files.<br><br>
-    visualization.py<br>      # Contains functions that are used on the visualization of the Neural Network results and predictions.<br><br>
-    experiments.ipynb<br>     # The python notebook that we run on colab.<br><br>
+    configuration/<br>        # Directory with hyperparameters configurations, saved on JSON form.<br>
+    data/<br>                 # Directory with data files.<br>
+    models/<br>               # Directory where models are saved.<br>
+    autoencoder.py<br>        # Autoencoder script.<br>
+    classification.py<br>     # Classifier script.<br>
+    model.py<br>              # Contains functions that are used for the Neural Network creation, train and test.<br>
+    test.py<br>               # Creates the configuration files.<br>
+    visualization.py<br>      # Contains functions that are used on the visualization of the Neural Network results and predictions.<br>
+    experiments.ipynb<br>     # The python notebook that we run on colab.<br>
     
 </h4>
 
 <h3>Experiments Details</h3>
-<h4>
+
   
   The experiments have all been tested on the notebook as they have their relevant report and their results there with the graphs.
   For the experiments we have followed the following series:
@@ -87,7 +87,7 @@ Written digits images classification with Convolutional Autoencoders in Keras
   Initially for each architecture we try different hyperparameters in order to reduce the overfitting and increase the accuracy and in the end we print comparatively all the graphs in order to choose the best model for each architecture.
 
   Finally, for the best models, we print graphs again to compare them and for the best models, we print the classification report as well as random images and the category assigned to them by the best classifier.
-</h4>
+
 
 <h3>Modules Details</h3>
 For the models we have models.py
